@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include "./seidel_method.h"
 
-TEST(Parallel_Seidel_Method, SLAE_2_x_2) {
+TEST(Parallel_Seidel_Method, SLAE_2_variables) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 }
