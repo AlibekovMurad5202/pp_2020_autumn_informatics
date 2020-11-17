@@ -91,16 +91,16 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
 }
 
 std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b, int size) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     std::vector<double> x_pred(size);
     std::vector<double> x(size);
     int iter_number = 0;
     double dist = epsilon;
     do {
         x_pred = x;
-        for (int i = 0; i < size; i++) {
-            //std::vector<double> part(A.at(i * size), A.at(i * size + size - 1));
-            x[i] = (b[i] - parallel_dot_product(std::vector<double>(A.at(i * size), A.at(i * size + size - 1)), x)) / A[i * size + i] + x[i];
-        }
+        for (int i = 0; i < size; i++)
+            x[i] = (b[i] - parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x)) / A[i * size + i] + x[i];
         iter_number++;
         
         dist = d(x, x_pred);
