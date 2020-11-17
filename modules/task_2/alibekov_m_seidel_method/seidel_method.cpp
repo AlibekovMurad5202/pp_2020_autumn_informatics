@@ -9,28 +9,29 @@
 
 double epsilon = 0.01;
 int max_count = 10;
-/*
-std::vector<std::vector<double> > generate_A(int size) {
+
+std::vector<double> generate_A(int size) {
     std::cout << "Hello!";
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
-    std::vector<std::vector<double> > A(size);
+    std::vector<double> A(size * size);
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
-            A[i][j] = double(static_cast<int>(gen()) % 100) 
-                + ((i == j) ? 100. : 0.) * double(size);
+            A[i * size + j] = (i == j) ? 
+                std::abs(double(static_cast<int>(gen()) % 100)) + 100. * double(size - 1):
+                double(static_cast<int>(gen()) % 100);
     return A;
 }
 
 std::vector<double> generate_b(int size) {
     std::mt19937 gen;
-    gen.seed(static_cast<unsigned int>(time(0)));
+    gen.seed(static_cast<unsigned int>(time(0)) + 7);
     std::vector<double> b(size);
     for (int i = 0; i < size; i++)
         b[i] = double(static_cast<int>(gen()) % 100);
     return b;
 }
-*/
+
 double parallel_dot_product(std::vector<double> x, std::vector<double> y) {
     int proc_count, proc_rank, n = x.size();
     
