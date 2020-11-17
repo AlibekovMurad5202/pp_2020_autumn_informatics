@@ -4,28 +4,36 @@
 #include <random>
 #include <ctime>
 #include <algorithm>
+#include "iostream"
 #include "../../../modules/task_2/alibekov_m_seidel_method/seidel_method.h"
+
+double epsilon = 0.01;
+int max_count = 10;
 
 double parallel_dot_product(std::vector<double> x, std::vector<double> y) {
     int proc_count, proc_rank, n = x.size();
+    
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     n = n / proc_count + n % proc_count > proc_rank ? 1 : 0;
     
-    std::vector<double> a(n);
-    std::vector<double> b(n);
+    double sum = 0.;
     
-    MPI_Scatter(&x[0], n, MPI_DOUBLE, a, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Scatter(&y[0], n, MPI_DOUBLE, b, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    if (n > 0) {
+        std::vector<double> a(n);
+        std::vector<double> b(n);
     
-    int sum = 0, sum_all;
-    for (int i = 0; i < n; i++)
-        sum += a[i] * b[i];
+        MPI_Scatter(&x[0], n, MPI_DOUBLE, &a[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(&y[0], n, MPI_DOUBLE, &b[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
+        for (int i = 0; i < n; i++)
+            sum += a[i] * b[i];
+    }
+    
+    double sum_all = 0.;
     MPI_Reduce(&sum, &sum_all, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    
     return sum_all;
 }
 
@@ -43,32 +51,41 @@ std::vector<double> solving_SLAE_sequential(std::vector<std::vector<double> > A,
     std::vector<double> x_pred(A.size());
     std::vector<double> x(A.size());
     int iter_number = 0;
+    double dist = epsilon;
     do {
         x_pred = x;
         for (int i = 0; i < A.size(); i++) {
             double sum = 0;
             for (int j = 0; j < i; j++)
-                sum += A[i * x.size() + j] * x[j];
+                //sum += A[i * x.size() + j] * x[j];
+                sum += A[i][j] * x[j];
             for (int j = i + 1; j < x.size(); j++)
-                sum += A[i * x.size() + j] * x[j];
-            x[i] = (b[i] - sum) / A[i * A.size() + i];
+                //sum += A[i * x.size() + j] * x[j];
+                sum += A[i][j] * x[j];
+            //x[i] = (b[i] - sum) / A[i * A.size() + i];
+            x[i] = (b[i] - sum) / A[i][i];
         }
         iter_number++;
-    } while ((d(x - x_pred) >= epsilon) && (iter_number < max_count));
+        
+        dist = d(x, x_pred);
+    } while ((dist >= epsilon) && (iter_number < max_count));
     return x;
 }
 
 std::vector<double> solving_SLAE_parallel(std::vector<std::vector<double> > A,
                                           std::vector<double> b) {
-    int max_count = 10;
     std::vector<double> x_pred(A.size());
     std::vector<double> x(A.size());
     int iter_number = 0;
+    double dist = epsilon;
     do {
         x_pred = x;
         for (int i = 0; i < A.size(); i++)
             x[i] = (b[i] - parallel_dot_product(A[i], x) + x[i] * A[i][i]) / A[i][i];
         iter_number++;
-    } while ((d(x - x_pred) >= epsilon) && (iter_number < max_count));
+        
+        dist = d(x, x_pred);
+        MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    } while ((dist >= epsilon) && (iter_number < max_count));
     return x;
 }
