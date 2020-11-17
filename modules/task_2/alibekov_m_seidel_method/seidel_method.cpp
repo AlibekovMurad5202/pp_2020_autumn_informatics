@@ -1,15 +1,36 @@
 // Copyright 2020 Alibekov Murad
 #include <mpi.h>
+#include "iostream"
 #include <vector>
 #include <random>
 #include <ctime>
 #include <algorithm>
-#include "iostream"
 #include "../../../modules/task_2/alibekov_m_seidel_method/seidel_method.h"
 
 double epsilon = 0.01;
 int max_count = 10;
+/*
+std::vector<std::vector<double> > generate_A(int size) {
+    std::cout << "Hello!";
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    std::vector<std::vector<double> > A(size);
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+            A[i][j] = double(static_cast<int>(gen()) % 100) 
+                + ((i == j) ? 100. : 0.) * double(size);
+    return A;
+}
 
+std::vector<double> generate_b(int size) {
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    std::vector<double> b(size);
+    for (int i = 0; i < size; i++)
+        b[i] = double(static_cast<int>(gen()) % 100);
+    return b;
+}
+*/
 double parallel_dot_product(std::vector<double> x, std::vector<double> y) {
     int proc_count, proc_rank, n = x.size();
     
@@ -45,25 +66,21 @@ double d(std::vector<double> x, std::vector<double> y) {
     return max_dist;
 }
 
-std::vector<double> solving_SLAE_sequential(std::vector<std::vector<double> > A,
-                                            std::vector<double> b) {
+std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<double> b, int size) {
     int max_count = 10;
-    std::vector<double> x_pred(A.size());
-    std::vector<double> x(A.size());
+    std::vector<double> x_pred(size);
+    std::vector<double> x(size);
     int iter_number = 0;
     double dist = epsilon;
     do {
         x_pred = x;
-        for (int i = 0; i < A.size(); i++) {
+        for (int i = 0; i < size; i++) {
             double sum = 0;
             for (int j = 0; j < i; j++)
-                //sum += A[i * x.size() + j] * x[j];
-                sum += A[i][j] * x[j];
-            for (int j = i + 1; j < x.size(); j++)
-                //sum += A[i * x.size() + j] * x[j];
-                sum += A[i][j] * x[j];
-            //x[i] = (b[i] - sum) / A[i * A.size() + i];
-            x[i] = (b[i] - sum) / A[i][i];
+                sum += A[i * size + j] * x[j];
+            for (int j = i + 1; j < size; j++)
+                sum += A[i * size + j] * x[j];
+            x[i] = (b[i] - sum) / A[i * size + i];
         }
         iter_number++;
         
@@ -72,16 +89,17 @@ std::vector<double> solving_SLAE_sequential(std::vector<std::vector<double> > A,
     return x;
 }
 
-std::vector<double> solving_SLAE_parallel(std::vector<std::vector<double> > A,
-                                          std::vector<double> b) {
-    std::vector<double> x_pred(A.size());
-    std::vector<double> x(A.size());
+std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b, int size) {
+    std::vector<double> x_pred(size);
+    std::vector<double> x(size);
     int iter_number = 0;
     double dist = epsilon;
     do {
         x_pred = x;
-        for (int i = 0; i < A.size(); i++)
-            x[i] = (b[i] - parallel_dot_product(A[i], x) + x[i] * A[i][i]) / A[i][i];
+        for (int i = 0; i < size; i++) {
+            //std::vector<double> part(A.at(i * size), A.at(i * size + size - 1));
+            x[i] = (b[i] - parallel_dot_product(std::vector<double>(A.at(i * size), A.at(i * size + size - 1)), x)) / A[i * size + i] + x[i];
+        }
         iter_number++;
         
         dist = d(x, x_pred);
