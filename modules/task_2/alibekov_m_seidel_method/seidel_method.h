@@ -5,7 +5,7 @@
 std::vector<double> generate_A(int size);
 std::vector<double> generate_b(int size);
 double d(std::vector<double> x, std::vector<double> y);
-double parallel_dot_product(std::vector<double> x, std::vector<double> y);
+double parallel_dot_product(std::vector<double>& x, std::vector<double>& y);
 std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<double> b, int size);
 std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b, int size);
 

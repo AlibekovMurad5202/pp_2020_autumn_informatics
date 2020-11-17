@@ -4,6 +4,80 @@
 #include "iostream"
 #include "./seidel_method.h"
 
+TEST(Parallel_Seidel_Method, SLAE_10_variables_parallel_test) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    int size = 10;
+    
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+    }
+    
+        std::vector<double> x = solving_SLAE_parallel(A, b, size);
+        
+            if (proc_rank == 0) {
+        
+        std::cout << "A: ";
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++)
+                std::cout << A[i * size + j] << "  ";
+            std::cout << std::endl;
+        };
+        
+        std::cout << std::endl << "b: ";
+        for (int i = 0; i < b.size(); i++) {
+            std::cout << b[i] << "  ";
+        };
+        
+        std::cout << std::endl << "x: ";
+        for (int i = 0; i < x.size(); i++) {
+            std::cout << x[i] << "  ";
+        };
+        std::cout << std::endl;
+    }
+}
+
+TEST(Parallel_Seidel_Method, SLAE_10_variables_sequential_test) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    int size = 10;
+    
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+    }
+    if (proc_rank == 0) {
+        std::vector<double> x = solving_SLAE_sequential(A, b, size);
+        
+        std::cout << "A: ";
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++)
+                std::cout << A[i * size + j] << "  ";
+            std::cout << std::endl;
+        };
+        
+        std::cout << std::endl << "b: ";
+        for (int i = 0; i < b.size(); i++) {
+            std::cout << b[i] << "  ";
+        };
+        
+        std::cout << std::endl << "x: ";
+        for (int i = 0; i < x.size(); i++) {
+            std::cout << x[i] << "  ";
+        };
+        std::cout << std::endl;
+    }
+}
+
 TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -36,7 +110,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential_test) {
         for (int i = 0; i < x.size(); i++) {
             std::cout << x[i] << "  ";
         };
-        
+        std::cout << std::endl;
     }
 }
 
@@ -74,7 +148,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel_test) {
         for (int i = 0; i < x.size(); i++) {
             std::cout << x[i] << "  ";
         };
-        
+        std::cout << std::endl;
     }
 }
 
@@ -137,7 +211,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential) {
         for (int i = 0; i < x.size(); i++) {
             std::cout << x[i] << "  ";
         };
-        
+        std::cout << std::endl;
     }
 }
 
@@ -175,7 +249,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel) {
         for (int i = 0; i < x.size(); i++) {
             std::cout << x[i] << "  ";
         };
-        
+        std::cout << std::endl;
     }
     
     /*

@@ -32,12 +32,14 @@ std::vector<double> generate_b(int size) {
     return b;
 }
 
-double parallel_dot_product(std::vector<double> x, std::vector<double> y) {
+double parallel_dot_product(std::vector<double>& x, std::vector<double>& y) {
     int proc_count, proc_rank, n = x.size();
     
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    int size = n;
+    //MPI_Bcast(&size, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     n = n / proc_count + n % proc_count > proc_rank ? 1 : 0;
     
@@ -47,11 +49,17 @@ double parallel_dot_product(std::vector<double> x, std::vector<double> y) {
         std::vector<double> a(n);
         std::vector<double> b(n);
     
-        MPI_Scatter(&x[0], n, MPI_DOUBLE, &a[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Scatter(&y[0], n, MPI_DOUBLE, &b[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    
-        for (int i = 0; i < n; i++)
-            sum += a[i] * b[i];
+        MPI_Scatter(&x[size / proc_count * proc_rank + proc_rank], n, MPI_DOUBLE, &a[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(&y[size / proc_count * proc_rank + proc_rank], n, MPI_DOUBLE, &b[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        
+            std::cout << "\nn = " << n << "\n";
+        if (proc_rank == 0) {
+            for (int i = 0; i < n; i++) {
+                sum += a[i] * b[i];
+                std::cout << a[i] << " * " << b[i] << " ";
+            }
+            std::cout << " ++ ";
+        }
     }
     
     double sum_all = 0.;
@@ -68,6 +76,8 @@ double d(std::vector<double> x, std::vector<double> y) {
 }
 
 std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<double> b, int size) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     int max_count = 10;
     std::vector<double> x_pred(size);
     std::vector<double> x(size);
@@ -77,16 +87,29 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
         x_pred = x;
         for (int i = 0; i < size; i++) {
             double sum = 0;
-            for (int j = 0; j < i; j++)
+            std::cout << "\n";
+            for (int j = 0; j < i; j++) {
                 sum += A[i * size + j] * x[j];
-            for (int j = i + 1; j < size; j++)
+                std::cout << A[i * size + j] << " * " << x[j] << " + "; 
+            }
+            for (int j = i + 1; j < size; j++) {
                 sum += A[i * size + j] * x[j];
+                std::cout << A[i * size + j] << " * " << x[j] << " + "; 
+            }
             x[i] = (b[i] - sum) / A[i * size + i];
+            std::cout << "\n";
         }
         iter_number++;
         
         dist = d(x, x_pred);
+        if (proc_rank == 0) std::cout << "\ndist (Iter: " << iter_number << ") = " << dist << std::endl;
+        if (proc_rank == 0) { 
+            std::cout << "x: ";
+            for (int i = 0; i < size; i++) std::cout << x[i] << " ";
+            std::cout << "\n";
+        }
     } while ((dist >= epsilon) && (iter_number < max_count));
+    if (proc_rank == 0) std::cout << "\nLast Iter: " << iter_number << std::endl;
     return x;
 }
 
@@ -99,12 +122,26 @@ std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<dou
     double dist = epsilon;
     do {
         x_pred = x;
-        for (int i = 0; i < size; i++)
-            x[i] = (b[i] - parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x)) / A[i * size + i] + x[i];
+        for (int i = 0; i < size; i++) {
+        if (proc_rank == 0) { 
+            std::cout << "x: ";
+            for (int i = 0; i < size; i++) std::cout << x[i] << " ";
+            std::cout << "\n";
+        }
+            x[i] += (b[i] - parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x)) / A[i * size + i];
+        
+        }
         iter_number++;
         
         dist = d(x, x_pred);
         MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        if (proc_rank == 0) std::cout << "\ndist (Iter: " << iter_number << ") = " << dist << std::endl;
+        if (proc_rank == 0) { 
+            std::cout << "x: ";
+            for (int i = 0; i < size; i++) std::cout << x[i] << " ";
+            std::cout << "\n";
+        }
     } while ((dist >= epsilon) && (iter_number < max_count));
+    if (proc_rank == 0) std::cout << "\nLast Iter: " << iter_number << std::endl;
     return x;
 }
