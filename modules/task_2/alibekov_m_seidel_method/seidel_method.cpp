@@ -78,10 +78,10 @@ double d(std::vector<double> x, std::vector<double> y) {
     return max_dist;
 }
 
-std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<double> b, int size) {
+std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<double> b) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
-    int max_count = 10;
+    int size = b.size();
     std::vector<double> x_pred(size);
     std::vector<double> x(size);
     int epoch = 0;
@@ -105,9 +105,10 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
     return x;
 }
 
-std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b, int size) {
+std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    int size = b.size();
     std::vector<double> x_pred(size);
     std::vector<double> x(size);
     int epoch = 0;

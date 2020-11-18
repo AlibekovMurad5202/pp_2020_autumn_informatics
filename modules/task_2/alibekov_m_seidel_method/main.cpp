@@ -16,7 +16,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_sequential) {
         A = generate_A(size);
         b = generate_b(size);
         
-        std::vector<double> x = solving_SLAE_sequential(A, b, size);
+        std::vector<double> x = solving_SLAE_sequential(A, b);
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -51,7 +51,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_parallel) {
         b = generate_b(size);
     }
     
-    std::vector<double> x = solving_SLAE_parallel(A, b, size);
+    std::vector<double> x = solving_SLAE_parallel(A, b);
         
     if (proc_rank == 0) {
         std::cout << "A: ";
@@ -86,7 +86,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
         A = generate_A(size);
         b = generate_b(size);
         
-        std::vector<double> x = solving_SLAE_sequential(A, b, size);
+        std::vector<double> x = solving_SLAE_sequential(A, b);
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -121,7 +121,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
         b = generate_b(size);
     }
     
-    std::vector<double> x = solving_SLAE_parallel(A, b, size);
+    std::vector<double> x = solving_SLAE_parallel(A, b);
     
     if (proc_rank == 0) {
         std::cout << "A: ";
@@ -159,7 +159,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
     
     if (proc_rank == 0) {
         
-        std::vector<double> x = solving_SLAE_sequential(A, b, size);
+        std::vector<double> x = solving_SLAE_sequential(A, b);
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -194,7 +194,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     };
     std::vector<double> b = { 3., 7., 5. };
     
-    std::vector<double> x = solving_SLAE_parallel(A, b, size);
+    std::vector<double> x = solving_SLAE_parallel(A, b);
         
     if (proc_rank == 0) {
         std::cout << "A: ";
