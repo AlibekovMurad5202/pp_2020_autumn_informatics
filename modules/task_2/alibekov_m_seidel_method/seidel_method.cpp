@@ -1,13 +1,14 @@
 // Copyright 2020 Alibekov Murad
 #include <mpi.h>
 #include "iostream"
+#include "math.h"
 #include <vector>
 #include <random>
 #include <ctime>
 #include <algorithm>
 #include "../../../modules/task_2/alibekov_m_seidel_method/seidel_method.h"
 
-double epsilon = 0.01;
+double epsilon = 0.0001;
 int max_count = 10;
 
 std::vector<double> generate_A(int size) {
@@ -34,44 +35,97 @@ std::vector<double> generate_b(int size) {
 
 double parallel_dot_product(std::vector<double>& x, std::vector<double>& y) {
     int proc_count, proc_rank, n = x.size();
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    const int delta = n / proc_count;
+    const int remain = n % proc_count;
+
+    if (proc_rank == 0) {
+        for (int proc = 1; proc < proc_count; proc++) {
+            MPI_Send(&x[0] + proc * delta + (remain > proc ? proc : remain), 
+                delta + (remain > proc ? 1 : 0), MPI_DOUBLE, proc, 0, MPI_COMM_WORLD);
+            MPI_Send(&y[0] + proc * delta + (remain > proc ? proc : remain), 
+                delta + (remain > proc ? 1 : 0), MPI_DOUBLE, proc, 1, MPI_COMM_WORLD);
+        }
+    }
+
+    std::vector<double> local_x(delta + (remain > proc_rank ? 1 : 0));
+    std::vector<double> local_y(delta + (remain > proc_rank ? 1 : 0));
+    if (proc_rank == 0) {
+        local_x = std::vector<double>(x.begin(), x.begin() + delta + (remain > proc_rank ? 1 : 0));
+        local_y = std::vector<double>(y.begin(), y.begin() + delta + (remain > proc_rank ? 1 : 0));
+    } else {
+        MPI_Status status;
+        MPI_Recv(&local_x[0], delta + (remain > proc_rank ? 1 : 0), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&local_y[0], delta + (remain > proc_rank ? 1 : 0), MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
+    }
+
+    int global_sum = 0;
+    int local_sum = 0;
+    std::cout << "|(" << proc_rank << ") (" << local_x.size() << ") (" << local_y.size() << ")|";
+
+    for (int  i = 0; i < local_x.size(); i++) {
+        local_sum += local_x[i] * local_y[i];
+        std::cout << local_x[i] << " * " << local_y[i] << " + ";
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    return global_sum;
+    
+    
+    
+    /*
+    
+    int proc_count, proc_rank, n = x.size();
+    int size = n;
     
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
-    int size = n;
-    //MPI_Bcast(&size, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    n = n / proc_count + n % proc_count > proc_rank ? 1 : 0;
+    std::vector<int> sizes(proc_count);
+    
+    for (int i = 0; i < proc_count; i++)
+        sizes[i] = n / proc_count + (n % proc_count > proc_rank ? 1 : 0);
+    
+    std::cout << "|(" << proc_rank << ") (after): " << sizes[proc_rank] << " |\n";
+    MPI_Barrier(MPI_COMM_WORLD);
     
     double sum = 0.;
     
-    if (n > 0) {
-        std::vector<double> a(n);
-        std::vector<double> b(n);
-    
-        MPI_Scatter(&x[size / proc_count * proc_rank + proc_rank], n, MPI_DOUBLE, &a[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Scatter(&y[size / proc_count * proc_rank + proc_rank], n, MPI_DOUBLE, &b[0], n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        
-            std::cout << "\nn = " << n << "\n";
+    if (sizes[proc_rank] > 0) {
+        std::vector<double> a(sizes[proc_rank]);
+        std::vector<double> b(sizes[proc_rank]);
         if (proc_rank == 0) {
-            for (int i = 0; i < n; i++) {
-                sum += a[i] * b[i];
-                std::cout << a[i] << " * " << b[i] << " ";
-            }
-            std::cout << " ++ ";
+            a = x;
+            b = y;
         }
+    
+        MPI_Scatter(&a[0], sizes[proc_rank], MPI_DOUBLE, &a[0], sizes[proc_rank], MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(&b[0], sizes[proc_rank], MPI_DOUBLE, &b[0], sizes[proc_rank], MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        //std::cout << "|(" << proc_rank << ") " << " (" << n << ") " << size / proc_count * proc_rank + proc_rank << "|";
+        //if (proc_rank == 0) {
+            for (int i = 0; i < sizes[proc_rank]; i++) {
+                sum += a[i] * b[i];
+                //std::cout << "(" << proc_rank << ") " << a[i] << " * " << b[i] << " ";
+            }
+            //std::cout << " ++ ";
+        //}
     }
     
+    MPI_Barrier(MPI_COMM_WORLD);
     double sum_all = 0.;
     MPI_Reduce(&sum, &sum_all, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     return sum_all;
+    
+    */
 }
 
 double d(std::vector<double> x, std::vector<double> y) {
     double max_dist = 0;
     int size = x.size();
     for (int i = 0; i < size; i++)
-        if (std::abs(x[i] - y[i]) > max_dist) max_dist = std::abs(x[i] - y[i]);
+        if (std::fabs(x[i] - y[i]) > max_dist) max_dist = std::fabs(x[i] - y[i]);
     return max_dist;
 }
 
@@ -97,7 +151,6 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
                 std::cout << A[i * size + j] << " * " << x[j] << " + "; 
             }
             x[i] = (b[i] - sum) / A[i * size + i];
-            std::cout << "\n";
         }
         iter_number++;
         
@@ -107,10 +160,15 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
             std::cout << "x: ";
             for (int i = 0; i < size; i++) std::cout << x[i] << " ";
             std::cout << "\n";
+            std::cout << "x_pred: ";
+            for (int i = 0; i < size; i++) std::cout << x_pred[i] << " ";
+            std::cout << "\n";
         }
     } while ((dist >= epsilon) && (iter_number < max_count));
     if (proc_rank == 0) std::cout << "\nLast Iter: " << iter_number << std::endl;
     return x;
+    
+    
 }
 
 std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<double> b, int size) {
@@ -123,22 +181,32 @@ std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<dou
     do {
         x_pred = x;
         for (int i = 0; i < size; i++) {
-        if (proc_rank == 0) { 
-            std::cout << "x: ";
-            for (int i = 0; i < size; i++) std::cout << x[i] << " ";
-            std::cout << "\n";
-        }
-            x[i] += (b[i] - parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x)) / A[i * size + i];
-        
+            
+            if (proc_rank == 0) { 
+                std::cout << "x: ";
+                for (int i = 0; i < size; i++) std::cout << x[i] << " ";
+            }
+            
+            double p = parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x);
+            x[i] = (b[i] - p + x[i] * A[i * size + i]) / A[i * size + i];
+            if (proc_rank == 0) { 
+                std::cout << "p[" << i << "] = " << p;
+                std::cout << "\n";
+            }
+            
+            MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         iter_number++;
         
         dist = d(x, x_pred);
-        MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dist, 1, MPI_LONG_DOUBLE, 0, MPI_COMM_WORLD);
         if (proc_rank == 0) std::cout << "\ndist (Iter: " << iter_number << ") = " << dist << std::endl;
         if (proc_rank == 0) { 
             std::cout << "x: ";
             for (int i = 0; i < size; i++) std::cout << x[i] << " ";
+            std::cout << "\n";
+            std::cout << "x_pred: ";
+            for (int i = 0; i < size; i++) std::cout << x_pred[i] << " ";
             std::cout << "\n";
         }
     } while ((dist >= epsilon) && (iter_number < max_count));
