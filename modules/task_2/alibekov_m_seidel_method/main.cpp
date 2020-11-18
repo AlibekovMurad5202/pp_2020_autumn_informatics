@@ -4,7 +4,7 @@
 #include "iostream"
 #include "./seidel_method.h"
 
-TEST(Parallel_Seidel_Method, SLAE_10_variables_sequential_test) {
+TEST(Seidel_Method, random_SLAE_10_variables_sequential_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -40,7 +40,7 @@ TEST(Parallel_Seidel_Method, SLAE_10_variables_sequential_test) {
     }
 }
 
-TEST(Parallel_Seidel_Method, SLAE_10_variables_parallel_test) {
+TEST(Seidel_Method, SLAE_10_variables_parallel_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -76,7 +76,7 @@ TEST(Parallel_Seidel_Method, SLAE_10_variables_parallel_test) {
     }
 }
 
-TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential_test) {
+TEST(Seidel_Method, SLAE_3_variables_sequential_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -112,7 +112,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential_test) {
     }
 }
 
-TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel_test) {
+TEST(Seidel_Method, SLAE_3_variables_parallel_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -151,7 +151,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel_test) {
 }
 
 
-TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential) {
+TEST(Seidel_Method, SLAE_3_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -213,7 +213,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential) {
     }
 }
 
-TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel) {
+TEST(Seidel_Method, SLAE_3_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
@@ -286,55 +286,6 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel) {
         int reference_count = getSentencesCountSequential(global_str);
         ASSERT_EQ(reference_count, global_count);
     }*/
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TEST(Parallel_Seidel_Method, dot_test) {
-    int proc_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
-    
-    int size = 10;
-    
-    std::vector<double> x(size), y(size);
-    
-    if (proc_rank == 0) {
-        x = generate_b(size);
-        y = generate_b(size);
-    }
-    
-    double res = parallel_dot_product(x, y);
-    
-    if (proc_rank == 0) {
-        
-        std::cout << std::endl << "res: ";
-        for (int i = 0; i < size; i++) {
-            std::cout << x[i] << " * " << y[i] << " + ";
-        };
-        
-        std::cout << " = " << res << std::endl;
-    }
 }
 
 int main(int argc, char** argv) {
