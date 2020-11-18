@@ -11,7 +11,6 @@ double epsilon = 0.0001;
 int max_count = 10;
 
 std::vector<double> generate_A(int size) {
-    std::cout << "Hello!";
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
     std::vector<double> A(size * size);
@@ -123,7 +122,7 @@ std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<dou
         epoch++;
         
         dist = d(x, x_pred);
-        MPI_Bcast(&dist, 1, MPI_LONG_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         if (proc_rank == 0) std::cout << "dist (Iter: " << epoch << ") = " << dist << std::endl;
     } while ((dist >= epsilon) && (epoch < max_count));
     return x;
