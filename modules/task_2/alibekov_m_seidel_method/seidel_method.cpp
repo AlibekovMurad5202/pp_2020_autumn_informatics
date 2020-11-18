@@ -61,8 +61,8 @@ double parallel_dot_product(std::vector<double>& x, std::vector<double>& y) {
         MPI_Recv(&local_y[0], delta + (remain > proc_rank ? 1 : 0), MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
     }
 
-    int global_sum = 0;
-    int local_sum = 0;
+    double global_sum = 0;
+    double local_sum = 0;
     std::cout << "|(" << proc_rank << ") (" << local_x.size() << ") (" << local_y.size() << ")|";
 
     for (int  i = 0; i < local_x.size(); i++) {
@@ -150,6 +150,7 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
                 sum += A[i * size + j] * x[j];
                 std::cout << A[i * size + j] << " * " << x[j] << " + "; 
             }
+            std::cout << "\nsum = " << sum << "\n";
             x[i] = (b[i] - sum) / A[i * size + i];
         }
         iter_number++;
@@ -187,8 +188,8 @@ std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<dou
                 for (int i = 0; i < size; i++) std::cout << x[i] << " ";
             }
             
-            double p = parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x);
-            x[i] = (b[i] - p + x[i] * A[i * size + i]) / A[i * size + i];
+            double p = parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x) - x[i] * A[i * size + i];
+            x[i] = (b[i] - p) / A[i * size + i];
             if (proc_rank == 0) { 
                 std::cout << "p[" << i << "] = " << p;
                 std::cout << "\n";

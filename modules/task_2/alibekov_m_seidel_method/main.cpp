@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include "iostream"
 #include "./seidel_method.h"
-/*
+
 TEST(Parallel_Seidel_Method, SLAE_10_variables_sequential_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -149,7 +149,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel_test) {
         std::cout << std::endl;
     }
 }
-*/
+
 
 TEST(Parallel_Seidel_Method, SLAE_3_variables_sequential) {
     int proc_rank;
@@ -310,7 +310,7 @@ TEST(Parallel_Seidel_Method, SLAE_3_variables_parallel) {
 
 
 
-/*
+
 TEST(Parallel_Seidel_Method, dot_test) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -335,7 +335,7 @@ TEST(Parallel_Seidel_Method, dot_test) {
         
         std::cout << " = " << res << std::endl;
     }
-}*/
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
