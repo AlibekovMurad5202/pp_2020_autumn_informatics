@@ -8,6 +8,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 3;
     std::vector<double> A(size * size);
     std::vector<double> b(size);
@@ -16,7 +17,9 @@ TEST(Seidel_Method, random_SLAE_3_variables_sequential) {
         A = generate_A(size);
         b = generate_b(size);
         
+        start_time = MPI_Wtime();
         std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -35,6 +38,10 @@ TEST(Seidel_Method, random_SLAE_3_variables_sequential) {
             std::cout << x[i] << "  ";
         };
         std::cout << std::endl;
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
     }
 }
 
@@ -42,6 +49,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 3;
     std::vector<double> A(size * size);
     std::vector<double> b(size);
@@ -51,7 +59,9 @@ TEST(Seidel_Method, random_SLAE_3_variables_parallel) {
         b = generate_b(size);
     }
     
+    if (proc_rank == 0) start_time = MPI_Wtime();
     std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
         
     if (proc_rank == 0) {
         std::cout << "A: ";
@@ -71,6 +81,10 @@ TEST(Seidel_Method, random_SLAE_3_variables_parallel) {
             std::cout << x[i] << "  ";
         };
         std::cout << std::endl;
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
     }
 }
 
@@ -78,6 +92,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 10;
     std::vector<double> A(size * size);
     std::vector<double> b(size);
@@ -86,7 +101,9 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
         A = generate_A(size);
         b = generate_b(size);
         
+        start_time = MPI_Wtime();
         std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -105,6 +122,10 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
             std::cout << x[i] << "  ";
         };
         std::cout << std::endl;
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
     }
 }
 
@@ -112,6 +133,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 10;
     std::vector<double> A(size * size);
     std::vector<double> b(size);
@@ -121,7 +143,9 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
         b = generate_b(size);
     }
     
+    if (proc_rank == 0) start_time = MPI_Wtime();
     std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
     
     if (proc_rank == 0) {
         std::cout << "A: ";
@@ -142,12 +166,17 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
         };
         std::cout << std::endl;
     }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
 }
 
 TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 3;
     
     std::vector<double> A = { 
@@ -158,8 +187,9 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
     std::vector<double> b = { 3., 7., 5. };
     
     if (proc_rank == 0) {
-        
+        start_time = MPI_Wtime();
         std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
         
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
@@ -179,12 +209,17 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
         };
         std::cout << std::endl;
     }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
 }
 
 TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
     
+    double start_time, end_time;
     int size = 3;
     
     std::vector<double> A = { 
@@ -194,7 +229,9 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     };
     std::vector<double> b = { 3., 7., 5. };
     
+    if (proc_rank == 0) start_time = MPI_Wtime();
     std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
         
     if (proc_rank == 0) {
         std::cout << "A: ";
@@ -222,7 +259,153 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         int reference_count = getSentencesCountSequential(global_str);
         ASSERT_EQ(reference_count, global_count);
     }*/
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
 }
+
+
+TEST(Seidel_Method, random_SLAE_100_variables_sequential) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 100;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+        
+        start_time = MPI_Wtime();
+        std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
+TEST(Seidel_Method, random_SLAE_100_variables_parallel) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 100;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+    }
+    
+    if (proc_rank == 0) start_time = MPI_Wtime();
+    std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
+
+TEST(Seidel_Method, random_SLAE_1000_variables_sequential) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 1000;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+        
+        start_time = MPI_Wtime();
+        std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
+TEST(Seidel_Method, random_SLAE_1000_variables_parallel) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 1000;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+    }
+    
+    if (proc_rank == 0) start_time = MPI_Wtime();
+    std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
+
+TEST(Seidel_Method, random_SLAE_10000_variables_sequential) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 10000;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+        
+        start_time = MPI_Wtime();
+        std::vector<double> x = solving_SLAE_sequential(A, b);
+        end_time = MPI_Wtime();
+    }
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
+TEST(Seidel_Method, random_SLAE_10000_variables_parallel) {
+    int proc_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+    
+    double start_time, end_time;
+    int size = 10000;
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    
+    if (proc_rank == 0) {
+        A = generate_A(size);
+        b = generate_b(size);
+    }
+    
+    if (proc_rank == 0) start_time = MPI_Wtime();
+    std::vector<double> x = solving_SLAE_parallel(A, b);
+    if (proc_rank == 0) end_time = MPI_Wtime();
+    
+    if (proc_rank == 0) {
+        printf("\n\tTime = %f\n", end_time - start_time);
+    }
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
