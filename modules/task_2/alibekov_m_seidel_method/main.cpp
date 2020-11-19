@@ -49,7 +49,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_sequential) {
         
         double error = d(Ax, b);
         printf("\n\tError = %.15f", error);
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
         
         ASSERT_LT(error, epsilon);
     }
@@ -101,7 +101,7 @@ TEST(Seidel_Method, random_SLAE_3_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -149,7 +149,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -199,7 +199,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -249,7 +249,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -291,14 +291,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         };
         std::cout << std::endl;
     }
-    
-    /*
-    int global_count = getSentencesCountParallel(global_str, count_chars);
-    if (proc_rank == 0) {
-        int reference_count = getSentencesCountSequential(global_str);
-        ASSERT_LE(reference_count, global_count);
-    }*/
-    
+
     if (proc_rank == 0) {
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
@@ -306,7 +299,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -337,7 +330,7 @@ TEST(Seidel_Method, random_SLAE_100_variables_sequential) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -367,7 +360,7 @@ TEST(Seidel_Method, random_SLAE_100_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -398,7 +391,7 @@ TEST(Seidel_Method, random_SLAE_1000_variables_sequential) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -428,7 +421,7 @@ TEST(Seidel_Method, random_SLAE_1000_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -459,7 +452,7 @@ TEST(Seidel_Method, random_SLAE_10000_variables_sequential) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 
@@ -489,7 +482,7 @@ TEST(Seidel_Method, random_SLAE_10000_variables_parallel) {
                 Ax[i] += A[i * size + j] * x[j];
     
         printf("\n\tError = %.15f", d(Ax, b));
-        printf("\n\tTime = %f\n", end_time - start_time);
+        printf("\n\tTime  = %f\n", end_time - start_time);
     }
 }
 */
