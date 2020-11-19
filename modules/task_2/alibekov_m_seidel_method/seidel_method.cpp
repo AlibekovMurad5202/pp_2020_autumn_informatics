@@ -31,7 +31,7 @@ double d(const std::vector<double>& x, const std::vector<double>& y) {
     double max_dist = 0;
     int size = x.size();
     for (int i = 0; i < size; i++)
-        if (std::fabs(x[i] - y[i]) > max_dist) max_dist = std::fabs(x[i] - y[i]);
+        if (std::fabs(x.at(i) - y.at(i)) > max_dist) max_dist = std::fabs(x.at(i) - y.at(i));
     return max_dist;
 }
 
@@ -65,8 +65,9 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     }
 
     double local_sum = 0;
-    for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
-        local_sum += local_x[i] * local_y[i];
+    //for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
+    for (int i = 0; i < static_cast<int>(local_x.size()); i++)
+        local_sum += local_x.at(i) * local_y.at(i);
 
     // MPI_Barrier(MPI_COMM_WORLD);
     double global_sum = 0;
@@ -118,7 +119,7 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
         for (int i = 0; i < size; i++) {
             std::vector<double> A_i(A.begin() + (i * size), A.begin() + (i * size + size));
             double dot = parallel_dot_product(A_i, x);
-            x[i] = (b[i] - (dot - x[i] * A[i * size + i])) / A[i * size + i];
+            x.at(i) = (b.at(i) - (dot - x.at(i) * A.at(i * size + i))) / A.at(i * size + i);
             MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         epoch++;
@@ -126,7 +127,7 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
-                Ax[i] += A[i * size + j] * x[j];
+                Ax.at(i) += A.at(i * size + j) * x.at(j);
 
         dist = d(Ax, b);
         // dist = d(x, x_pred);

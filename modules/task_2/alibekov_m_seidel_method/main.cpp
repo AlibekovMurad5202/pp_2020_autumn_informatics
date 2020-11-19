@@ -89,18 +89,18 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         std::cout << "A: ";
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++)
-                std::cout << A[i * size + j] << "  ";
+                std::cout << A.at(i * size + j) << "  ";
             std::cout << std::endl;
         }
 
         std::cout << std::endl << "b: ";
-        for (int i = 0; i < size; i++) {
-            std::cout << b[i] << "  ";
+        for (auto b_i : b) {
+            std::cout << b_i << "  ";
         }
 
         std::cout << std::endl << "x: ";
-        for (int i = 0; i < size; i++) {
-            std::cout << x[i] << "  ";
+        for (auto x_i : x) {
+            std::cout << x_i << "  ";
         }
         std::cout << std::endl;
     }
@@ -109,7 +109,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
-                Ax[i] += A[i * size + j] * x[j];
+                Ax.at(i) += A.at(i * size + j) * x.at(j);
 
         double error = d(Ax, b);
         printf("\tError = %.15f\n", error);
