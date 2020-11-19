@@ -4,7 +4,7 @@
 #include <vector>
 #include "iostream"
 #include "./seidel_method.h"
-
+/*
 TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -41,17 +41,14 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
         for (int i = 0; i < size; i++) {
             std::cout << x[i] << "  ";
         }
+        std::cout << std::endl;
     }
 
     if (proc_rank == 0) {
         std::vector<double> Ax(size);
-        std::cout << std::endl << "Ax: ";
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
                 Ax[i] += A[i * size + j] * x[j];
-            std::cout << Ax[i] << " ";
-        }
-        std::cout << std::endl;
 
         double error = d(Ax, b);
         printf("\tError = %.15f\n", error);
@@ -60,7 +57,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+
 TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -113,7 +110,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+
 TEST(Seidel_Method, random_SLAE_5_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -164,7 +161,7 @@ TEST(Seidel_Method, random_SLAE_5_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+*/
 TEST(Seidel_Method, random_SLAE_5_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -201,14 +198,17 @@ TEST(Seidel_Method, random_SLAE_5_variables_parallel) {
         for (int i = 0; i < size; i++) {
             std::cout << x[i] << "  ";
         }
-        std::cout << std::endl;
     }
 
     if (proc_rank == 0) {
         std::vector<double> Ax(size);
-        for (int i = 0; i < size; i++)
+        std::cout << std::endl << "Ax: ";
+        for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++)
                 Ax[i] += A[i * size + j] * x[j];
+            std::cout << Ax[i] << " ";
+        }
+        std::cout << std::endl;
 
         double error = d(Ax, b);
         printf("\tError = %.15f\n", error);
@@ -217,7 +217,7 @@ TEST(Seidel_Method, random_SLAE_5_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+/*
 TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -268,7 +268,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+
 TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -321,7 +321,7 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+
 TEST(Seidel_Method, random_SLAE_100_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -354,7 +354,7 @@ TEST(Seidel_Method, random_SLAE_100_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+
 TEST(Seidel_Method, random_SLAE_100_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -387,7 +387,7 @@ TEST(Seidel_Method, random_SLAE_100_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+
 TEST(Seidel_Method, random_SLAE_500_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -420,7 +420,7 @@ TEST(Seidel_Method, random_SLAE_500_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+
 TEST(Seidel_Method, random_SLAE_500_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -453,7 +453,7 @@ TEST(Seidel_Method, random_SLAE_500_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+
 TEST(Seidel_Method, random_SLAE_1000_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -486,7 +486,7 @@ TEST(Seidel_Method, random_SLAE_1000_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-/*
+
 TEST(Seidel_Method, random_SLAE_1000_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
