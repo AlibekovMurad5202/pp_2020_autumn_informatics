@@ -31,7 +31,7 @@ double d(const std::vector<double>& x, const std::vector<double>& y) {
     double max_dist = 0;
     int size = x.size();
     for (int i = 0; i < size; i++)
-        if (std::fabs(x.at(i) - y.at(i)) > max_dist) max_dist = std::fabs(x.at(i) - y.at(i));
+        if (std::fabs(x[i] - y[i]) > max_dist) max_dist = std::fabs(x[i] - y[i]);
     return max_dist;
 }
 
@@ -45,10 +45,11 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     const int remain = n % proc_count;
     double local_sum = 0;
     double global_sum = 0;
-    if (delta + (remain > proc_rank ? 1 : 0) == 0) {
-        MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-        return global_sum;
-    }
+
+    //if (delta + (remain > proc_rank ? 1 : 0) == 0) {
+    //    MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    //    return global_sum;
+    //}
 
     if (proc_rank == 0) {
         for (int proc = 1; proc < proc_count; proc++) {
@@ -59,8 +60,8 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
         }
     }
 
-    std::vector<double> local_x(delta + (remain > proc_rank ? 1 : 0));
-    std::vector<double> local_y(delta + (remain > proc_rank ? 1 : 0));
+    std::vector<double> local_x(delta + (remain > proc_rank ? 1 : 0) + 1);
+    std::vector<double> local_y(delta + (remain > proc_rank ? 1 : 0) + 1);
     if (proc_rank == 0) {
         local_x = std::vector<double>(x.begin(), x.begin() + delta + (remain > proc_rank ? 1 : 0));
         local_y = std::vector<double>(y.begin(), y.begin() + delta + (remain > proc_rank ? 1 : 0));
@@ -70,9 +71,8 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
         MPI_Recv(&local_y[0], delta + (remain > proc_rank ? 1 : 0), MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status);
     }
 
-    // for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
-    for (int i = 0; i < static_cast<int>(local_x.size()); i++)
-        local_sum += local_x.at(i) * local_y.at(i);
+    for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
+        local_sum += local_x[i] * local_y[i];
 
     // MPI_Barrier(MPI_COMM_WORLD);
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -123,15 +123,15 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
         for (int i = 0; i < size; i++) {
             std::vector<double> A_i(A.begin() + (i * size), A.begin() + (i * size + size));
             double dot = parallel_dot_product(A_i, x);
-            x.at(i) = (b.at(i) - (dot - x.at(i) * A.at(i * size + i))) / A.at(i * size + i);
-            // MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            x[i] = (b[i] - (dot - x[i] * A[i * size + i])) / A[i * size + i];
+            MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         epoch++;
 
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
-                Ax.at(i) += A.at(i * size + j) * x.at(j);
+                Ax[i] += A[i * size + j] * x[j];
 
         dist = d(Ax, b);
         // dist = d(x, x_pred);
