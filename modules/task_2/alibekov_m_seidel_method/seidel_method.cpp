@@ -13,8 +13,8 @@ std::vector<double> generate_A(int size) {
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             A[i * size + j] = (i == j) ?
-                std::abs(double(static_cast<int>(gen()) % 100)) + 100. * double(size - 1) :
-                double(static_cast<int>(gen()) % 100);
+                std::abs(double(static_cast<double>(gen()) % 100)) + 100. * double(size - 1) :
+                double(static_cast<double>(gen()) % 100);
     return A;
 }
 
@@ -23,7 +23,7 @@ std::vector<double> generate_b(int size) {
     gen.seed(static_cast<unsigned int>(time(0)) + 7);
     std::vector<double> b(size);
     for (int i = 0; i < size; i++)
-        b[i] = double(static_cast<int>(gen()) % 100);
+        b[i] = double(static_cast<double>(gen()) % 100);
     return b;
 }
 
@@ -99,7 +99,7 @@ std::vector<double> solving_SLAE_sequential(const std::vector<double>& A, const 
                 Ax[i] += A[i * size + j] * x[j];
 
         dist = d(Ax, b);
-        //dist = d(x, x_pred);
+        // dist = d(x, x_pred);
     } while ((dist >= epsilon) && (epoch < max_count));
     return x;
 }
@@ -128,7 +128,7 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
                 Ax[i] += A[i * size + j] * x[j];
 
         dist = d(Ax, b);
-        //dist = d(x, x_pred);
+        // dist = d(x, x_pred);
         MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     } while ((dist >= epsilon) && (epoch < max_count));
     return x;
