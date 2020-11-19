@@ -65,7 +65,7 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     }
 
     double local_sum = 0;
-    //for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
+    // for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
     for (int i = 0; i < static_cast<int>(local_x.size()); i++)
         local_sum += local_x.at(i) * local_y.at(i);
 
