@@ -68,30 +68,20 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
 
     double start_time, end_time;
     int size = 3;
-    std::vector<double> A {
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
+    std::vector<double> x(size);
+
+    if (proc_rank == 0) {
+        A = {
             10., 1., 2.,
             0., 10., 3.,
             0., 0., 5.
         };
-    std::vector<double> b { 3., 7., 5. };
-    std::vector<double> x(size);
-
-/*     // if (proc_rank == 0) {
-        A[0] = 10.; A[1] =  1.; A[2] = 2.;
-        A[3] =  0.; A[4] = 10.; A[5] = 3.;
-        A[6] =  0.; A[7] =  0.; A[8] = 5.;
-
-        b[0] = 3.;
-        b[1] = 7.;
-        b[2] = 5.;
-    // } */
+        b = { 3., 7., 5. };
+    }
 
     if (proc_rank == 0) start_time = MPI_Wtime();
-    MPI_Barrier(MPI_COMM_WORLD);
-    std::cout << "|(" << proc_rank << ") | (" << A.at(0) << ") (" << A.at(8);
-    std::cout << ") | (" << b.at(0) << ") (" << b.at(2) << ")";
-    MPI_Barrier(MPI_COMM_WORLD);
-
     x = solving_SLAE_parallel(A, b);
     if (proc_rank == 0) end_time = MPI_Wtime();
 
@@ -125,7 +115,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         printf("\tError = %.15f\n", error);
         printf("\tTime  = %f\n", end_time - start_time);
 
-        // ASSERT_LT(error, epsilon);
+        ASSERT_LT(error, epsilon);
     }
 }
 /*
