@@ -68,11 +68,15 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
 
     double start_time, end_time;
     int size = 3;
-    std::vector<double> A(size * size);
-    std::vector<double> b(size);
+    std::vector<double> A {
+            10., 1., 2.,
+            0., 10., 3.,
+            0., 0., 5.
+        };
+    std::vector<double> b { 3., 7., 5. };
     std::vector<double> x(size);
 
-    // if (proc_rank == 0) {
+/*     // if (proc_rank == 0) {
         A[0] = 10.; A[1] =  1.; A[2] = 2.;
         A[3] =  0.; A[4] = 10.; A[5] = 3.;
         A[6] =  0.; A[7] =  0.; A[8] = 5.;
@@ -80,7 +84,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         b[0] = 3.;
         b[1] = 7.;
         b[2] = 5.;
-    // }
+    // } */
 
     if (proc_rank == 0) start_time = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
