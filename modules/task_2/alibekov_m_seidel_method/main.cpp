@@ -435,7 +435,7 @@ TEST(Seidel_Method, random_SLAE_1000_variables_parallel) {
     }
 }
 
-
+/*
 TEST(Seidel_Method, random_SLAE_10000_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -497,7 +497,7 @@ TEST(Seidel_Method, random_SLAE_10000_variables_parallel) {
         printf("\tTime  = %f\n", end_time - start_time);
     }
 }
-
+*/
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

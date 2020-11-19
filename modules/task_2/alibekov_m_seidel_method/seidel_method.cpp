@@ -13,8 +13,8 @@ std::vector<double> generate_A(int size) {
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             A[i * size + j] = (i == j) ?
-                std::abs(double(static_cast<double>(gen()) % 100)) + 100. * double(size - 1) :
-                double(static_cast<double>(gen()) % 100);
+                std::abs(static_cast<double>(static_cast<int>(gen()) % 100)) + 100. * static_cast<double>(size - 1) :
+                static_cast<double>(static_cast<int>(gen()) % 100);
     return A;
 }
 
@@ -23,7 +23,7 @@ std::vector<double> generate_b(int size) {
     gen.seed(static_cast<unsigned int>(time(0)) + 7);
     std::vector<double> b(size);
     for (int i = 0; i < size; i++)
-        b[i] = double(static_cast<double>(gen()) % 100);
+        b[i] = static_cast<double>(static_cast<int>(gen()) % 100);
     return b;
 }
 
