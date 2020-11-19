@@ -30,7 +30,6 @@ std::vector<double> generate_b(int size) {
 double d(const std::vector<double>& x, const std::vector<double>& y) {
     double max_dist = 0;
     int size = x.size();
-    if (size == 0) return 0;
     for (int i = 0; i < size; i++)
         if (std::fabs(x[i] - y[i]) > max_dist) max_dist = std::fabs(x[i] - y[i]);
     return max_dist;

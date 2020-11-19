@@ -4,21 +4,26 @@
 #include <vector>
 #include "iostream"
 #include "./seidel_method.h"
-/*
+
 TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
     double start_time, end_time;
     int size = 3;
-
-    std::vector<double> A = {
-        10., 1., 2.,
-        0., 10., 3.,
-        0., 0., 5.
-    };
-    std::vector<double> b = { 3., 7., 5. };
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
     std::vector<double> x(size);
+
+    if (proc_rank == 0) {
+        A = {
+            10., 1., 2.,
+            0., 10., 3.,
+            0., 0., 5.
+        };
+        b = { 3., 7., 5. };
+    }
+
 
     if (proc_rank == 0) {
         start_time = MPI_Wtime();
@@ -64,14 +69,18 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
 
     double start_time, end_time;
     int size = 3;
-
-    std::vector<double> A = {
-        10., 1., 2.,
-        0., 10., 3.,
-        0., 0., 5.
-    };
-    std::vector<double> b = { 3., 7., 5. };
+    std::vector<double> A(size * size);
+    std::vector<double> b(size);
     std::vector<double> x(size);
+
+    if (proc_rank == 0) {
+        A = {
+            10., 1., 2.,
+            0., 10., 3.,
+            0., 0., 5.
+        };
+        b = { 3., 7., 5. };
+    }
 
     if (proc_rank == 0) start_time = MPI_Wtime();
     x = solving_SLAE_parallel(A, b);
@@ -110,7 +119,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-*/
+
 TEST(Seidel_Method, random_SLAE_5_variables_sequential) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
