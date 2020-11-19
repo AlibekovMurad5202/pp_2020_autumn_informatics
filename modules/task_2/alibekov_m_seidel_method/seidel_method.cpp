@@ -1,6 +1,5 @@
 // Copyright 2020 Alibekov Murad
 #include <mpi.h>
-#include "iostream"
 #include <vector>
 #include <random>
 #include <ctime>
@@ -13,8 +12,8 @@ std::vector<double> generate_A(int size) {
     std::vector<double> A(size * size);
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
-            A[i * size + j] = (i == j) ? 
-                std::abs(double(static_cast<int>(gen()) % 100)) + 100. * double(size - 1):
+            A[i * size + j] = (i == j) ?
+                std::abs(double(static_cast<int>(gen()) % 100)) + 100. * double(size - 1) :
                 double(static_cast<int>(gen()) % 100);
     return A;
 }
@@ -46,9 +45,9 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
 
     if (proc_rank == 0) {
         for (int proc = 1; proc < proc_count; proc++) {
-            MPI_Send(&x[0] + proc * delta + (remain > proc ? proc : remain), 
+            MPI_Send(&x[0] + proc * delta + (remain > proc ? proc : remain),
                 delta + (remain > proc ? 1 : 0), MPI_DOUBLE, proc, 0, MPI_COMM_WORLD);
-            MPI_Send(&y[0] + proc * delta + (remain > proc ? proc : remain), 
+            MPI_Send(&y[0] + proc * delta + (remain > proc ? proc : remain),
                 delta + (remain > proc ? 1 : 0), MPI_DOUBLE, proc, 1, MPI_COMM_WORLD);
         }
     }
@@ -67,7 +66,7 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     double local_sum = 0;
     for (int  i = 0; i < local_x.size(); i++)
         local_sum += local_x[i] * local_y[i];
-    
+
     MPI_Barrier(MPI_COMM_WORLD);
     double global_sum = 0;
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -93,12 +92,12 @@ std::vector<double> solving_SLAE_sequential(const std::vector<double>& A, const 
             x[i] = (b[i] - sum) / A[i * size + i];
         }
         epoch++;
-        
+
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
                 Ax[i] += A[i * size + j] * x[j];
-            
+
         dist = d(Ax, b);
         //dist = d(x, x_pred);
     } while ((dist >= epsilon) && (epoch < max_count));
@@ -116,17 +115,18 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
     do {
         x_pred = x;
         for (int i = 0; i < size; i++) {
-            double dot = parallel_dot_product(std::vector<double>(A.begin() + (i * size), A.begin() + (i * size + size)), x);
+            std::vector<double> A_i(A.begin() + (i * size), A.begin() + (i * size + size));
+            double dot = parallel_dot_product(A_i, x);
             x[i] = (b[i] - (dot - x[i] * A[i * size + i])) / A[i * size + i];
             MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         epoch++;
-        
+
         std::vector<double> Ax(size);
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
                 Ax[i] += A[i * size + j] * x[j];
-            
+
         dist = d(Ax, b);
         //dist = d(x, x_pred);
         MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);

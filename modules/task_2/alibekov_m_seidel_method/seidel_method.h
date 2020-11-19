@@ -2,6 +2,8 @@
 #ifndef MODULES_TASK_2_ALIBEKOV_M_SEIDEL_METHOD_SEIDEL_METHOD_H_
 #define MODULES_TASK_2_ALIBEKOV_M_SEIDEL_METHOD_SEIDEL_METHOD_H_
 
+#include <vector>
+
 const double epsilon = 0.0001;
 const int max_count = 100;
 
