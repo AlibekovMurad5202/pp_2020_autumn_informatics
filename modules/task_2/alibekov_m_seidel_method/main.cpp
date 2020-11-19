@@ -92,7 +92,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     std::cout << ") | (" << b.at(0) << ") (" << b.at(2) << ")";
     MPI_Barrier(MPI_COMM_WORLD);
 
-    // x = solving_SLAE_parallel(A, b);
+    x = solving_SLAE_parallel(A, b);
     if (proc_rank == 0) end_time = MPI_Wtime();
 
     if (proc_rank == 0) {

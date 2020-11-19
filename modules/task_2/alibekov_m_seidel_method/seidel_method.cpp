@@ -118,7 +118,10 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
         x_pred = x;
         for (int i = 0; i < size; i++) {
             std::vector<double> A_i(A.begin() + (i * size), A.begin() + (i * size + size));
-            double dot = parallel_dot_product(A_i, x);
+            //double dot = parallel_dot_product(A_i, x);
+            double dot = 0;
+            for (int j = 0; j < size; j++)
+                dot += A_i.at(j) * x.at(j);
             x.at(i) = (b.at(i) - (dot - x.at(i) * A.at(i * size + i))) / A.at(i * size + i);
             MPI_Bcast(&x[i], 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
