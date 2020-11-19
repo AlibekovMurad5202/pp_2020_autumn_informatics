@@ -7,9 +7,6 @@
 #include <algorithm>
 #include "../../../modules/task_2/alibekov_m_seidel_method/seidel_method.h"
 
-double epsilon = 0.0001;
-int max_count = 100;
-
 std::vector<double> generate_A(int size) {
     std::mt19937 gen;
     gen.seed(static_cast<unsigned int>(time(0)));
@@ -98,7 +95,13 @@ std::vector<double> solving_SLAE_sequential(std::vector<double> A, std::vector<d
         }
         epoch++;
         
-        dist = d(x, x_pred);
+        std::vector<double> Ax(size);
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                Ax[i] += A[i * size + j] * x[j];
+            
+        dist = d(Ax, b);
+        //dist = d(x, x_pred);
     } while ((dist >= epsilon) && (epoch < max_count));
     return x;
 }
@@ -120,7 +123,13 @@ std::vector<double> solving_SLAE_parallel(std::vector<double> A, std::vector<dou
         }
         epoch++;
         
-        dist = d(x, x_pred);
+        std::vector<double> Ax(size);
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                Ax[i] += A[i * size + j] * x[j];
+            
+        dist = d(Ax, b);
+        //dist = d(x, x_pred);
         MPI_Bcast(&dist, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     } while ((dist >= epsilon) && (epoch < max_count));
     return x;

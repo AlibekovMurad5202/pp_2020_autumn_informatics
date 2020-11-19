@@ -2,6 +2,9 @@
 #ifndef MODULES_TASK_2_ALIBEKOV_M_SEIDEL_METHOD_SEIDEL_METHOD_H_
 #define MODULES_TASK_2_ALIBEKOV_M_SEIDEL_METHOD_SEIDEL_METHOD_H_
 
+const double epsilon = 0.0001;
+const int max_count = 100;
+
 std::vector<double> generate_A(int size);
 std::vector<double> generate_b(int size);
 double d(std::vector<double> x, std::vector<double> y);
