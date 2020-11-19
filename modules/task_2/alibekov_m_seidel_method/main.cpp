@@ -60,7 +60,7 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
         ASSERT_LT(error, epsilon);
     }
 }
-
+/*
 TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     int proc_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
@@ -519,7 +519,7 @@ TEST(Seidel_Method, random_SLAE_1000_variables_parallel) {
         ASSERT_LT(error, epsilon);
     }
 }
-
+*/
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
