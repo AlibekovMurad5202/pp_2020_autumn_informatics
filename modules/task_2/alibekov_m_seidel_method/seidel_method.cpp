@@ -41,12 +41,12 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
-    
+
     const int delta = n / proc_count;
     const int remain = n % proc_count;
     double local_sum = 0;
     double global_sum = 0;
-    
+
     if (proc_rank == 0) {
         for (int proc = 1; proc < proc_count; proc++) {
             MPI_Send(&x[0] + proc * delta + (remain > proc ? proc : remain),
@@ -81,7 +81,7 @@ std::vector<double> solving_SLAE_sequential(const std::vector<double>& A, const 
     std::vector<double> x(size);
     int epoch = 0;
     double dist = epsilon;
-    
+
     do {
         for (int i = 0; i < size; i++) {
             double sum = 0;
@@ -110,7 +110,7 @@ std::vector<double> solving_SLAE_parallel(const std::vector<double>& A, const st
     std::vector<double> x(size);
     int epoch = 0;
     double dist = epsilon;
-    
+
     do {
         for (int i = 0; i < size; i++) {
             std::vector<double> A_i(A.begin() + (i * size), A.begin() + (i * size + size));

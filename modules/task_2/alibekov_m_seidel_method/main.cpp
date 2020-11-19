@@ -32,12 +32,12 @@ TEST(Seidel_Method, my_SLAE_3_variables_sequential) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
@@ -84,12 +84,12 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
@@ -139,12 +139,12 @@ TEST(Seidel_Method, random_SLAE_5_variables_sequential) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
@@ -192,12 +192,12 @@ TEST(Seidel_Method, random_SLAE_5_variables_parallel) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
@@ -247,12 +247,12 @@ TEST(Seidel_Method, random_SLAE_10_variables_sequential) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
@@ -300,12 +300,12 @@ TEST(Seidel_Method, random_SLAE_10_variables_parallel) {
                 std::cout << A[i * size + j] << "  ";
             std::cout << std::endl;
         }
-        
+
         std::cout << std::endl << "b: ";
         for (auto b_i : b) {
             std::cout << b_i << "  ";
         }
-        
+
         std::cout << std::endl << "x: ";
         for (auto x_i : x) {
             std::cout << x_i << "  ";
