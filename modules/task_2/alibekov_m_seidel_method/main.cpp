@@ -73,12 +73,13 @@ TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     std::vector<double> x(size);
 
     if (proc_rank == 0) {
-        A = {
-            10., 1., 2.,
-            0., 10., 3.,
-            0., 0., 5.
-        };
-        b = { 3., 7., 5. };
+        A[0] = 10.; A[1] =  1.; A[2] = 2.;
+        A[3] =  0.; A[4] = 10.; A[5] = 3.;
+        A[6] =  0.; A[7] =  0.; A[8] = 5.;
+        
+        b[0] = 3.;
+        b[1] = 7.;
+        b[2] = 5.;
     }
 
     if (proc_rank == 0) start_time = MPI_Wtime();
