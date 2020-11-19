@@ -13,8 +13,8 @@ std::vector<double> generate_A(int size) {
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             A[i * size + j] = (i == j) ?
-                std::abs(static_cast<double>(static_cast<int>(gen()) % 100)) + 100. * static_cast<double>(size - 1) :
-                static_cast<double>(static_cast<int>(gen()) % 100);
+                std::abs(static_cast<int>(gen()) % 100) + 100. * (size - 1) :
+                static_cast<int>(gen()) % 100;
     return A;
 }
 
