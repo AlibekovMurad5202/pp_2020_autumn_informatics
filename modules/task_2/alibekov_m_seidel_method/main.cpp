@@ -1,9 +1,9 @@
 // Copyright 2020 Alibekov Murad
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include "./seidel_method.h"
-#include "iostream"
 #include <vector>
+#include "iostream"
+#include "./seidel_method.h"
 
 TEST(Seidel_Method, my_SLAE_3_variables_parallel) {
     int proc_rank;
