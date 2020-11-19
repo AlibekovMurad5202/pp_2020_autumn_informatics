@@ -64,7 +64,7 @@ double parallel_dot_product(const std::vector<double>& x, const std::vector<doub
     }
 
     double local_sum = 0;
-    for (int  i = 0; i < local_x.size(); i++)
+    for (int i = 0; i < delta + (remain > proc_rank ? 1 : 0); i++)
         local_sum += local_x[i] * local_y[i];
 
     // MPI_Barrier(MPI_COMM_WORLD);
