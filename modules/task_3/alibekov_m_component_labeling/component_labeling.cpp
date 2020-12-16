@@ -7,7 +7,7 @@
 #include <utility>
 #include "../../../modules/task_3/alibekov_m_component_labeling/component_labeling.h"
 
-std::vector<int> remarking(const std::vector<int>& image, size_t width, size_t height) {
+std::vector<int> remarking(const std::vector<int>& image, int width, int height) {
     int size = width * height;
     std::vector<int> result(size);
     std::vector<int> last_labels(size / 2 + 1);
@@ -33,7 +33,7 @@ std::vector<int> remarking(const std::vector<int>& image, size_t width, size_t h
 }
 
 
-std::vector<int> generate_random_image(size_t width, size_t height) {
+std::vector<int> generate_random_image(int width, int height) {
     std::mt19937 gen;
     gen.seed(time(0) + random_offset++ * 17);
 
@@ -46,7 +46,7 @@ std::vector<int> generate_random_image(size_t width, size_t height) {
 
 
 std::pair<std::vector<int>, std::pair<std::vector<int>, int> >
-first_pass(const std::vector<int>& image, size_t width, size_t height, size_t begin_label) {
+first_pass(const std::vector<int>& image, int width, int height, int begin_label) {
     int labels_count = 0;
     int size = width * height;
     std::vector<int> disjoint_sets(size);  // disjoint sets of labels
@@ -93,7 +93,7 @@ first_pass(const std::vector<int>& image, size_t width, size_t height, size_t be
 }
 
 
-std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_sets, size_t width, size_t height) {
+std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_sets, int width, int height) {
     std::vector<int> result(height * width);
     for (int row = 0; row < height; row++)
         for (int column = 0; column < width; column++) {
@@ -113,8 +113,8 @@ std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_set
 
 
 std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector<int>& image,
-                                                               size_t width,
-                                                               size_t height) {
+                                                               int width,
+                                                               int height) {
     std::pair<std::vector<int>, std::pair<std::vector<int>, int> >
         first_pass_result = first_pass(image, width, height);
     std::vector<int> map = first_pass_result.first;
@@ -127,7 +127,7 @@ std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector
 
 
 std::pair<std::vector<int>, int>
-component_labeling_parallel(const std::vector<int>& image, size_t width, size_t height) {
+component_labeling_parallel(const std::vector<int>& image, int width, int height) {
     int proc_count, proc_rank;
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
