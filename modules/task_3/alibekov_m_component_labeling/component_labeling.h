@@ -5,8 +5,6 @@
 #include <vector>
 #include <utility>
 
-static int random_offset = 0;
-
 std::vector<int> remarking(const std::vector<int>& image, int width, int height);
 std::vector<int> generate_random_image(int width, int height);
 std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector<int>& image,

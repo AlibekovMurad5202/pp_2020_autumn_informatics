@@ -7,6 +7,8 @@
 #include <utility>
 #include "../../../modules/task_3/alibekov_m_component_labeling/component_labeling.h"
 
+static int random_offset = 0;
+
 std::vector<int> remarking(const std::vector<int>& image, int width, int height) {
     int size = width * height;
     std::vector<int> result(size);
