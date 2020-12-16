@@ -1,9 +1,9 @@
 // Copyright 2020 Alibekov Murad
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
+#include <mpi.h>
 #include <vector>
-#include "mpi.h"
-
+#include <utility>
 #include "./component_labeling.h"
 
 TEST(Component_Labeling, my_image_9x11_parallel) {

@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
-
 #include "../../../modules/task_3/alibekov_m_component_labeling/component_labeling.h"
 
 std::vector<int> remarking(const std::vector<int>& image, size_t width, size_t height) {
@@ -24,8 +23,9 @@ std::vector<int> remarking(const std::vector<int>& image, size_t width, size_t h
                 last_labels[++max_label] = pixel;
                 new_labels[max_label] = max_label;
                 result[i] = new_labels[max_label];
-            } else
+            } else {
                 result[i] = new_labels[idx];
+            }
         }
     }
 
@@ -66,9 +66,9 @@ first_pass(const std::vector<int>& image, size_t width, size_t height, size_t be
                 if ((A == 0) && (B != 0)) tmp_image[idx] = B;
                 if ((A != 0) && (B == 0)) tmp_image[idx] = A;
                 if ((A != 0) && (B != 0)) {
-                    if (A == B) 
+                    if (A == B) {
                         tmp_image[idx] = A;
-                    else {
+                    } else {
                         int root_max_AB = std::max(A, B);
                         while (disjoint_sets[root_max_AB - begin_label] != root_max_AB)
                             root_max_AB = disjoint_sets[root_max_AB - begin_label];
@@ -126,7 +126,7 @@ std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector
 }
 
 
-std::pair<std::vector<int>, int> 
+std::pair<std::vector<int>, int>
 component_labeling_parallel(const std::vector<int>& image, size_t width, size_t height) {
     int proc_count, proc_rank;
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
@@ -137,14 +137,16 @@ component_labeling_parallel(const std::vector<int>& image, size_t width, size_t 
     const int remain = (height % proc_count) * width;
     std::vector<int> result(size);
 
-    if (proc_rank == 0)
+    if (proc_rank == 0) {
         for (int proc = 1; proc < proc_count; proc++)
             MPI_Send(image.data() + remain + proc * delta, delta, MPI_INT, proc, 0, MPI_COMM_WORLD);
+    }
 
     std::vector<int> local_image(delta + remain);
 
-    if (proc_rank == 0) local_image = std::vector<int>(image.cbegin(), image.cbegin() + delta + remain);
-    else {
+    if (proc_rank == 0) {
+        local_image = std::vector<int>(image.cbegin(), image.cbegin() + delta + remain);
+    } else {
         MPI_Status status;
         MPI_Recv(local_image.data(), delta, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
@@ -207,7 +209,6 @@ component_labeling_parallel(const std::vector<int>& image, size_t width, size_t 
                     int dis_set_A = global_disjoint_sets[A];
                     int dis_set_B = global_disjoint_sets[B];
                     if (dis_set_A != dis_set_B) {
-
                         int root_max_AB = std::max(A, B);
                         while (global_disjoint_sets[root_max_AB] != root_max_AB)
                             root_max_AB = global_disjoint_sets[root_max_AB];
