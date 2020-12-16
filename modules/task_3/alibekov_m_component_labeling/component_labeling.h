@@ -20,5 +20,7 @@ std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_set
 std::pair<std::vector<int>, int> component_labeling_parallel(const std::vector<int>& image, 
                                                  size_t width, 
                                                  size_t height);
-
+                                                 /*
+std::pair<std::vector<int>, int> second_pass_par(std::vector<int> map, std::vector<int> disjoint_sets, size_t width, size_t height);
+*/
 #endif  // MODULES_TASK_3_ALIBEKOV_M_COMPONENT_LABELING_COMPONENT_LABELING_H_

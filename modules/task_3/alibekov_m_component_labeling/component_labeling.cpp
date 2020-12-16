@@ -7,8 +7,45 @@
 #include <utility>
 
 #include "../../../modules/task_3/alibekov_m_component_labeling/component_labeling.h"
+/*
+std::pair<std::vector<int>, int> second_pass_par(std::vector<int> map, std::vector<int> disjoint_sets, size_t width, size_t height) {
+    
+    int size = width * height;
+    std::vector<int> result(size);
+    std::vector<int> last_labels(size / 2 + 1);
+    std::vector<int> new_labels(size / 2 + 1);
+    int max_label = 0;
+    
+    for (int row = 0; row < height; row++)
+        for (int column = 0; column < width; column++) {
+            int idx = row * width + column;
+            int pixel = map[idx];
+            if (pixel != 0)
+                if (disjoint_sets[pixel] == pixel) result[idx] = pixel;
+                else {
+                    while (disjoint_sets[pixel] != pixel) pixel = disjoint_sets[pixel];
+                    result[idx] = pixel;
+                }
+                
+            int i = row * width + column;
+            pixel = result[i];
+            if (pixel != 0) {
+                int idx = -1;
+                for (int k = 1; last_labels[k] != 0; k++) if (last_labels[k] == pixel) { idx = k; break; }
+                if (idx == -1) {
+                    last_labels[++max_label] = pixel;
+                    new_labels[max_label] = max_label;
+                    result[i] = new_labels[max_label];
+                } else result[i] = new_labels[idx];
+            }
+        }
+    return std::make_pair(result, max_label);
+    return std::make_pair(map, 1);
+}
 
+*/
 std::pair<std::vector<int>, int> remarking(const std::vector<int>& image, size_t width, size_t height) {
+    
     int size = width * height;
     std::vector<int> result(size);
     std::vector<int> last_labels(size / 2 + 1);
@@ -56,11 +93,12 @@ std::pair<std::vector<int>, std::vector<int> > first_pass(
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
          ////////
          */
-    int label = 0;
+    // int label = 0;
     int size = width * height;
     std::vector<int> disjoint_sets(size);  // disjoint sets of labels
-    std::vector<int> tmp_image(size);
-    for (int x = 0; x < size; x++) { disjoint_sets[x] = x + begin_label; tmp_image[x] = (int)image[x]; }
+    // std::vector<int> tmp_image(size);
+    std::vector<int> tmp_image(image.begin(), image.begin() + size);
+    for (int x = 0; x < size; x++) { disjoint_sets[x] = x + begin_label; }// tmp_image[x] = (int)image[x]; }
     
     for (int row = 0; row < height; row++) {
         for (int column = 0; column < width; column++) {
@@ -75,12 +113,13 @@ std::pair<std::vector<int>, std::vector<int> > first_pass(
                 if ((A == 0) && (B != 0)) tmp_image[idx] = B;
                 if ((A != 0) && (B == 0)) tmp_image[idx] = A;
                 if ((A != 0) && (B != 0)) {
-                    if (A == B) tmp_image[idx] = A;
-                    else {
+                    
+                     if (A == B) tmp_image[idx] = A;
+                     else {
                         int root_max_AB = std::max(A, B);
                         while (disjoint_sets[root_max_AB - begin_label] != root_max_AB) 
                             root_max_AB = disjoint_sets[root_max_AB - begin_label];
-                            
+                        
                         int root_min_AB = std::min(A, B);
                         while (disjoint_sets[root_min_AB - begin_label] != root_min_AB) 
                             root_min_AB = disjoint_sets[root_min_AB - begin_label];
@@ -90,18 +129,29 @@ std::pair<std::vector<int>, std::vector<int> > first_pass(
                         }
                         tmp_image[idx] = root_min_AB;
                         
-                    }
+                     }
                     
                     // В прошлом:
                     /*
                     int min = std::min(A, B);
+                    int max = std::max(A, B);
                     tmp_image[idx] = min;
-                    disjoint_sets[std::distance(disjoint_sets.begin(), 
+                    auto d = std::find(disjoint_sets.begin(), 
+                                                          disjoint_sets.end(), 
+                                                          max);
+                    while (idx != disjoint_sets[idx]) {
+                        disjoint_sets[std::distance(disjoint_sets.begin(), d)] = min;
+                        d = std::find(disjoint_sets.begin(), 
+                                                          disjoint_sets.end(), 
+                                                          max);
+                    }
+                    // for (int i = 0; i < size; i++) if (disjoint_sets[i] == max) disjoint_sets[i] = min;
+                    /*disjoint_sets[std::distance(disjoint_sets.begin(), 
                                                 std::find(disjoint_sets.begin(), 
                                                           disjoint_sets.end(), 
-                                                          std::max(A, B)))] = min;
+                                                          max))] = min;*/
                     // disjoint_sets[std::max(A, B)] = min;
-                    */
+                    
                 }
                 
             }
@@ -120,10 +170,10 @@ std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_set
             int idx = row * width + column;
             int pixel = map[idx];
             if (pixel != 0)
-                if (disjoint_sets[pixel] == pixel) result[idx] = static_cast<int>(pixel);
+                if (disjoint_sets[pixel] == pixel) result[idx] = pixel;
                 else {
                     while (disjoint_sets[pixel] != pixel) pixel = disjoint_sets[pixel];
-                    result[idx] = static_cast<int>(pixel);
+                    result[idx] = pixel;
                 }
         }
     return result;
@@ -132,6 +182,36 @@ std::vector<int> second_pass(std::vector<int> map, std::vector<int> disjoint_set
 std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector<int>& image, 
                                                    size_t width, 
                                                    size_t height) {
+    /*
+    int size = width * height;
+    std::vector<int> tmp_image(image.begin(), image.begin() + size);
+    
+    for (int row = 0; row < height; row++) {
+        for (int column = 0; column < width; column++) {
+            int idx = row * width + column;
+            if (tmp_image[idx] != 0) {
+                int A = idx < width ? 0 : tmp_image[idx - width];
+                int B = ((idx < 1) || ((idx - 1) / width != row)) ? 0 : tmp_image[idx - 1];
+                
+                if ((A == 0) && (B == 0)) tmp_image[idx] = idx;
+                if ((A == 0) && (B != 0)) tmp_image[idx] = B;
+                if ((A != 0) && (B == 0)) tmp_image[idx] = A;
+                if ((A != 0) && (B != 0)) {
+                    
+                     if (A == B) tmp_image[idx] = A;
+                     else {
+                         tmp_image[idx] = std::min(A, B);
+                        for (int h = 0; h <= row; h++)
+                            for (int w = 0; w < width; w++)
+                                if (tmp_image[h * width + w] == std::max(A, B)) tmp_image[h * width + w] = std::min(A, B);
+                      }
+                }
+                
+            }
+        }
+    }
+    std::pair<std::vector<int>, int> result = remarking(tmp_image, width, height);
+    */
     
     std::pair<std::vector<int>, std::vector<int> > first_pass_result = first_pass(image, width, height);
     std::vector<int> map = first_pass_result.first;
@@ -139,7 +219,7 @@ std::pair<std::vector<int>, int> component_labeling_sequential(const std::vector
     std::vector<int> second_pass_result = second_pass(map, disjoint_sets, width, height);
     std::pair<std::vector<int>, int> result = remarking(second_pass_result, width, height);
     
-    return result;
+    return result; //{tmp_image, result.second};
 }
 
 std::pair<std::vector<int>, int> component_labeling_parallel(const std::vector<int>& image, 
@@ -211,40 +291,6 @@ std::pair<std::vector<int>, int> component_labeling_parallel(const std::vector<i
     
     
     
-    
-    /*
-    if (proc_rank == 3) {
-        std::cout << "\tOn process [1]:\n";
-        for (int i = 0; i < map.size(); i++) {
-            if (map[i] != 0) printf("%2i ", map[i]);
-            else printf(" 0 ");
-            if (i % width == width - 1) std::cout << std::endl;
-        }
-        std::cout << std::endl;
-        
-        for (int i = 0; i < dis_set.size(); i++) {
-            if (dis_set[i] != 0) printf("%2i ", dis_set[i]);
-            else printf(" 0 ");
-            if (i % width == width - 1) std::cout << std::endl;
-        }
-        std::cout << std::endl;
-        std::cout << "\t-------||------\n";
-    }
-    */
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     std::vector<int> displs(proc_count);
     displs[1] = remain + delta;
     std::vector<int> recvcounts(proc_count);
@@ -304,12 +350,10 @@ std::pair<std::vector<int>, int> component_labeling_parallel(const std::vector<i
             int second_line_begin = (x != 0 ? remain : 0) + delta * x;
             int first_line_begin = second_line_begin - width;
             for (int offset = 0; offset < width; offset++) {
-                int first_line_idx = first_line_begin + offset;
-                int second_line_idx = second_line_begin + offset;
                 // ... [A] ...
                 // ... [B] ...
-                int A = global_map[first_line_idx];
-                int B = global_map[second_line_idx];
+                int A = global_map[first_line_begin + offset];
+                int B = global_map[second_line_begin + offset];
                 // std::cout << "\t[A]: " << A << "\t[B]: " << B << std::endl;
                 if ((A != 0) && (B != 0)) {
                     int dis_set_A = global_disjoint_sets[A];
@@ -379,5 +423,5 @@ std::pair<std::vector<int>, int> component_labeling_parallel(const std::vector<i
         ////////////////////////////////////////////////////////////////////////////////////////////
     }
     
-    return remarking(result, width, height);
+    return remarking(result, width, height);// second_pass_par(global_map, global_disjoint_sets, width, height);
 }
