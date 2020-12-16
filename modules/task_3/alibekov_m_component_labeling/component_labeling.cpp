@@ -7,8 +7,6 @@
 #include <utility>
 #include "../../../modules/task_3/alibekov_m_component_labeling/component_labeling.h"
 
-static int random_offset = 0;
-
 std::vector<int> remarking(const std::vector<int>& image, int width, int height) {
     int size = width * height;
     std::vector<int> result(size);
@@ -37,11 +35,11 @@ std::vector<int> remarking(const std::vector<int>& image, int width, int height)
 
 std::vector<int> generate_random_image(int width, int height) {
     std::mt19937 gen;
-    gen.seed(time(0) + random_offset++ * 17);
+    gen.seed(static_cast<unsigned int>(time(0)));
 
     std::vector<int> image(height * width);
     for (int i = 0; i < height * width; ++i)
-        image[i] = gen() % 2;
+        image[i] = static_cast<int>(gen()) % 2;
 
     return image;
 }
