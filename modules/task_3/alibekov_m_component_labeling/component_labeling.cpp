@@ -132,10 +132,17 @@ component_labeling_parallel(const std::vector<int>& image, int width, int height
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
+    if (proc_count == 1)
+        return component_labeling_sequential(image, width, height);
+
     int size = width * height;
     const int delta = height / proc_count * width;
     const int remain = (height % proc_count) * width;
     std::vector<int> result(size);
+
+    if (delta == 0)
+        return proc_rank == 0 ? component_labeling_sequential(image, width, height)
+                              : std::make_pair(result, 0);
 
     if (proc_rank == 0) {
         for (int proc = 1; proc < proc_count; proc++)
